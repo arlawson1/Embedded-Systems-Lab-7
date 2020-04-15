@@ -15,7 +15,6 @@ using namespace std;
 
 string printTag(int mainMemorySize, int cacheMemorySize, int cacheBlockSize, int associativity, int mmBlkNum){
         // number of bits for tag is (# MM blocks / assoc)
-        // int mainMemorySize, int cacheMemorySize, int cacheBlockSize, int associativity, int mmBlk
         string tagToPrint = "";
         int numMM_blocks = mainMemorySize / cacheBlockSize;
         int numBits = log2(numMM_blocks / ((cacheMemorySize / cacheBlockSize) / associativity));
@@ -67,23 +66,6 @@ bool isPowerOfTwo(int n){
                 n = n / 2;
         }
         return 1;
-}
-
-// IN PROGRESS function to find the tag number and print it as binary code
-void tagMaker(int mainMemorySize, int cacheMemorySize, int cacheBlockSize, int associativity, int mmBlk){
-        int numMMblocks = mainMemorySize / cacheBlockSize;
-        int numCMsets = (cacheMemorySize / cacheBlockSize) / associativity;
-        int maxTagNum = numMMblocks / numCMsets;
-        int numTagBits = log2(maxTagNum);
-        int tagNum = mmBlk / ((cacheMemorySize / cacheBlockSize) / associativity);
-        for(int i = numTagBits; i > 0; i--){
-                if((tagNum / pow(2,i-1)) == 1){
-                        cout << "1";
-                }
-                else{
-                        cout << "0";
-                }
-        }
 }
 
 int main(){
@@ -225,6 +207,7 @@ while(cont == 1){
                 if(cmSet < 10) {cout << " ";}
                 int cmBlk = cmBlkNum(memLoc.at(i), cacheBlockSize, cacheMemorySize, associativity);
                 cout << "              " << cmBlk << "-" << cmBlk + (associativity - 1);
+                if(cmBlk < 1000){cout << " ";}
                 if(cmBlk < 100){cout << "  ";}
                 if(cmBlk < 10) {cout << "  ";}
 
@@ -380,6 +363,7 @@ while(cont == 1){
         cout << "\n";
 
         inFile.close();
+        // initialized to 'x' so it resets every loop of main
         char yesOrNo = 'x';
         // loop to ask the user if they would like to run the program again
         while(yesOrNo != 'y' && yesOrNo != 'n'){
