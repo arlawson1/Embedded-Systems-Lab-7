@@ -209,15 +209,18 @@ while(cont == 1){
                 bool isInCache = 0;
                 cout << "      " << memLoc.at(i);
                 // creates more space in the event of a memory address being smaller than the biggest one acceptable
+                if(memLoc.at(i) < 10000){cout << " ";}
                 if(memLoc.at(i) < 1000){cout << " ";}
                 if(memLoc.at(i) < 100){cout << " ";}
                 if(memLoc.at(i) < 10) {cout << " ";}
                 int mmBlk = mmBlkNum(memLoc.at(i), cacheBlockSize);
-                cout << "               " << mmBlk;
+                cout << "              " << mmBlk;
+                if(mmBlk < 1000){cout << " ";}
                 if(mmBlk < 100){cout << " ";}
                 if(mmBlk < 10) {cout << " ";}
                 int cmSet = cmSetNum(memLoc.at(i), cacheBlockSize, cacheMemorySize, associativity);
-                cout << "            " << cmSet;
+                cout << "           " << cmSet;
+                if(cmSet < 1000){cout << " ";}
                 if(cmSet < 100){cout << " ";}
                 if(cmSet < 10) {cout << " ";}
                 int cmBlk = cmBlkNum(memLoc.at(i), cacheBlockSize, cacheMemorySize, associativity);
@@ -350,8 +353,8 @@ while(cont == 1){
         cout << "Actual hit rate = " << hitCnt << "/" << numOfReferences << " = " << (hitCnt * 100) / numOfReferences << "%\n\n";
         cout << "Final \"status\" of the cache:\n";
 
-        cout << "Cache blk #    dirty bit       valid bit        tag        Data\n";
-        cout << "_______________________________________________________________\n";
+        cout << "Cache blk #    dirty bit       valid bit        tag           Data\n";
+        cout << "__________________________________________________________________\n";
         for(int y = 0; y < cacheSize; y++){
                 cout << "      " << y;
                 if(y < 100){cout << " ";}
@@ -365,9 +368,9 @@ while(cont == 1){
                 else{
                         cout << printTag(mainMemorySize, cacheMemorySize, cacheBlockSize, associativity, dataNum[y]);
                 }
-                cout << "      ";
+                cout << "         ";
                 if(validBit[y] == 0){
-                        cout << "   xxx";
+                        cout << "   xxx   ";
                 }
                 else{
                         cout << "mm blk # " << dataNum[y];
@@ -377,7 +380,7 @@ while(cont == 1){
         cout << "\n";
 
         inFile.close();
-        char yesOrNo;
+        char yesOrNo = 'x';
         // loop to ask the user if they would like to run the program again
         while(yesOrNo != 'y' && yesOrNo != 'n'){
                 cout << "Continue? (y = yes, n = no): ";
