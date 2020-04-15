@@ -229,21 +229,26 @@ while(cont == 1){
 
                 // int used to search a cache memory set (used to detect cache hits)
                 int cmBlkSearch = 0;
+                // loop to search all blocks in a given cache memory set for a matching main memory block
                 while(isInCache == 0 && cmBlkSearch < associativity){
                         if(dataNum[cmBlk + cmBlkSearch] == memLoc.at(i) / cacheBlockSize && validBit[cmBlk +cmBlkSearch] == 1){
                                 isInCache = 1;
                                 cout << "          hit";
+                                // sets dirty bit if the address is being written to
                                 if(readWrite.at(i) == 'W'){
                                         dirtyBit[cmBlk + cmBlkSearch] = 1;
                                 }
+                                // hit counter increases; best possible hit counter increases
                                 hitCnt++;
                                 mmBlkCnt[mmBlk]++;
+                                // loop to increase the age of all valid cache memory blocks
                                 for(int a = 0; a < cacheSize; a++){
                                         if(validBit[a] == 1){
                                                 fifo[a]++;
                                                 lru[a]++;
                                         }
                                 }
+                                // reset the least recently used block's age
                                 lru[cmBlk + cmBlkSearch] = 0;
                         }
                         else{
@@ -252,18 +257,23 @@ while(cont == 1){
                         }
                 }
 
+                // similar to cmBlkSearch, used to offset the index of the cache memory block
                 int cacheOffset = 0;
                 while(isInCache == 0){
                         cout << "          miss";
+                        // resets the "flag" for a specific main memory block; used in calculating best possible hit rate
                         if(mmBlkCnt[mmBlk] == -1){
                                 mmBlkCnt[mmBlk] = 0;
                         }
+                        // if the "flag" has been reset, the main memory block counter starts increasing with each potential hit
                         else if(mmBlkCnt[mmBlk] >= 0){
                                 mmBlkCnt[mmBlk]++;
                         }
-                        while(validBit[cmBlk + cacheOffset] == 1 && cacheOffset < associativity){               /* CHECK HERE FOR BUGS */
+                        // loop to check for an "empty spot" in a cache memory set
+                        while(validBit[cmBlk + cacheOffset] == 1 && cacheOffset < associativity){
                                 cacheOffset++;
                         }
+                        // two similar conditional statements to calculate which block to replace when a set is "full"
                         if(cacheOffset == associativity && replacementPolicy == 'L'){
                                 int oldestIndex = 0;
                                 int maxAgelru = -999;
@@ -298,6 +308,7 @@ while(cont == 1){
                                         }
                                 }
                         }
+                        // else if the cache is not full, write into the next "open" cache memory block
                         else{
                                 dataNum[cmBlk + cacheOffset] = mmBlk;
                                 validBit[cmBlk + cacheOffset] = 1;
@@ -308,11 +319,13 @@ while(cont == 1){
                                         }
                                 }
                         }
-                        //tag[i] = mmBlk;                               // makes valid bits glitch out????
+                        // the main memory block is now in the cache and the loop can safely end
                         isInCache = 1;
+                        // if the address was written to, set the dirty block
                         if(readWrite.at(i) == 'W'){
                                 dirtyBit[cmBlk + cacheOffset] = 1;
                         }
+                        // reset the dirty bit if the main memory block in the cache is being replaced by a read operation
                         else if(readWrite.at(i) == 'R' && dirtyBit[cmBlk + cacheOffset] == 1){
                                         dirtyBit[cmBlk + cacheOffset] = 0;
                                 }
@@ -324,12 +337,14 @@ while(cont == 1){
         }
 
         int bestPossibleHitRate = 0;
+        // loop to sum up the best possible hit rate
         for(int i = 0; i < mainMemorySize / cacheBlockSize; i++){
                 if(mmBlkCnt[i] > 0){
                         bestPossibleHitRate += mmBlkCnt[i];
                 }
         }
 
+        // table displaying the contents of the cache
         cout << "\n\n";
         cout << "Highest possible hit rate = " << bestPossibleHitRate << "/" << numOfReferences << " = " << (bestPossibleHitRate * 100) / numOfReferences << "%\n";
         cout << "Actual hit rate = " << hitCnt << "/" << numOfReferences << " = " << (hitCnt * 100) / numOfReferences << "%\n\n";
@@ -362,8 +377,8 @@ while(cont == 1){
         cout << "\n";
 
         inFile.close();
-        char yesOrNo = 'n';
-        cont = 0;
+        char yesOrNo;
+        // loop to ask the user if they would like to run the program again
         while(yesOrNo != 'y' && yesOrNo != 'n'){
                 cout << "Continue? (y = yes, n = no): ";
                 cin >> yesOrNo;
